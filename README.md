@@ -1,6 +1,5 @@
 # 🚀 Fiverr Clone - Next.js 15 + React 19
 
-![Fiverr Clone](https://github.com/vukrosic/next14-fiverr/blob/main/public/thumbnail.png?raw=true)
 
 A full-stack Fiverr clone built with the latest web technologies.
 

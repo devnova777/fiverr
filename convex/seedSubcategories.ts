@@ -33,9 +33,16 @@ export const create = mutation({
         }
 
         const categories = await ctx.db.query("categories").collect();
+        
+        if (categories.length === 0) {
+            throw new Error("Please seed categories first before seeding subcategories");
+        }
+
         const subcategoriesCheck = await ctx.db.query("subcategories").collect();
 
-        if (subcategoriesCheck.length > 0) return;
+        if (subcategoriesCheck.length > 0) {
+            return { message: "Subcategories already seeded", count: subcategoriesCheck.length };
+        }
 
         await Promise.all(
             categories.flatMap((category, index) => {
@@ -49,6 +56,7 @@ export const create = mutation({
             })
         );
 
-        return;
+        const newSubcategories = await ctx.db.query("subcategories").collect();
+        return { message: "Subcategories seeded successfully", count: newSubcategories.length };
     },
 });

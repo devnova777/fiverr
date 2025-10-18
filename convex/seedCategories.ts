@@ -22,12 +22,21 @@ export const create = mutation({
             throw new Error("Unauthorized");
         }
 
-        categories.map(async (category) => {
-            await ctx.db.insert("categories", {
-                name: category.name
-            })
-        })
+        // Check if categories already exist
+        const existingCategories = await ctx.db.query("categories").collect();
+        if (existingCategories.length > 0) {
+            return { message: "Categories already seeded", count: existingCategories.length };
+        }
 
-        return;
+        // Insert all categories
+        await Promise.all(
+            categories.map((category) => 
+                ctx.db.insert("categories", {
+                    name: category.name
+                })
+            )
+        );
+
+        return { message: "Categories seeded successfully", count: categories.length };
     },
 });

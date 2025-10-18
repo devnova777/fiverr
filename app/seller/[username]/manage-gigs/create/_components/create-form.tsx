@@ -18,6 +18,7 @@ import { useState } from "react"
 import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useRouter } from "next/navigation"
+import { useMutation } from "convex/react"
 
 interface CreateFormProps {
     username: string;
@@ -54,6 +55,12 @@ export const CreateForm = ({
 }: CreateFormProps) => {
     const categories = useQuery(api.categories.get);
     const [subcategories, setSubcategories] = useState<Doc<"subcategories">[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
+    const [isSeeding, setIsSeeding] = useState(false);
+    
+    const seedCategories = useMutation(api.seedCategories.create);
+    const seedSubcategories = useMutation(api.seedSubcategories.create);
+    
     const {
         mutate,
         pending
@@ -68,11 +75,33 @@ export const CreateForm = ({
 
     function handleCategoryChange(categoryName: string) {
         if (categories === undefined) return;
-        const selectedCategory = categories.find(category => category.name === categoryName);
-        if (selectedCategory) {
-            setSubcategories(selectedCategory.subcategories);
+        setSelectedCategory(categoryName);
+        const category = categories.find(cat => cat.name === categoryName);
+        if (category) {
+            setSubcategories(category.subcategories);
+            // Reset subcategory when category changes
+            form.setValue("subcategoryId", "");
         }
     }
+
+    async function handleSeedDatabase() {
+        setIsSeeding(true);
+        try {
+            const catResult = await seedCategories({});
+            toast.success(catResult.message);
+            
+            const subResult = await seedSubcategories({});
+            toast.success(subResult.message);
+            
+            toast.info("Database seeded! Page will refresh...");
+            setTimeout(() => window.location.reload(), 1500);
+        } catch (error: any) {
+            toast.error(error.message || "Failed to seed database");
+        } finally {
+            setIsSeeding(false);
+        }
+    }
+
     function onSubmit(data: CreateFormValues) {
         mutate({
             title: data.title,
@@ -87,6 +116,42 @@ export const CreateForm = ({
             .catch(() => {
                 toast.error("Failed to create gig")
             })
+    }
+
+    // Show loading state
+    if (categories === undefined) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading categories...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show message if no categories
+    if (categories.length === 0) {
+        return (
+            <div className="flex justify-center items-center min-h-[400px]">
+                <div className="text-center max-w-md p-6 border rounded-lg shadow-lg">
+                    <h3 className="text-lg font-semibold mb-2">No Categories Found</h3>
+                    <p className="text-gray-600 mb-4">
+                        Categories need to be seeded in the database first.
+                    </p>
+                    <p className="text-sm text-gray-500 mb-6">
+                        Click the button below to seed the database with default categories and subcategories.
+                    </p>
+                    <Button 
+                        onClick={handleSeedDatabase}
+                        disabled={isSeeding}
+                        className="w-full"
+                    >
+                        {isSeeding ? "Seeding Database..." : "Seed Categories & Subcategories"}
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -149,22 +214,35 @@ export const CreateForm = ({
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Subcategory</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select 
+                                onValueChange={field.onChange} 
+                                defaultValue={field.value}
+                                disabled={!selectedCategory || subcategories.length === 0}
+                            >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a subcategory" />
+                                        <SelectValue placeholder={
+                                            !selectedCategory 
+                                                ? "Select a category first" 
+                                                : subcategories.length === 0
+                                                ? "No subcategories available"
+                                                : "Select a subcategory"
+                                        } />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {subcategories.map((subcategory, index) => (
-                                        <SelectItem key={index} value={subcategory._id}>
+                                    {subcategories.map((subcategory) => (
+                                        <SelectItem key={subcategory._id} value={subcategory._id}>
                                             {subcategory.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                             <FormDescription>
-                                Subcategory will help buyers pinpoint your service more narrowly.
+                                {!selectedCategory 
+                                    ? "Please select a category first to see subcategories."
+                                    : "Subcategory will help buyers pinpoint your service more narrowly."
+                                }
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
