@@ -17,6 +17,7 @@ import {
     DialogClose,
     DialogContent,
     DialogTrigger,
+    DialogTitle,
 } from "@/components/ui/dialog"
 import { Loading } from "@/components/auth/loading";
 import { useQuery } from "convex/react";
@@ -65,33 +66,30 @@ const Navbar = () => {
                         </TooltipProvider>
                     </DialogTrigger>
                     <DialogContent className="overflow-y-auto max-h-[calc(100vh-200px)]">
-                        {/* <ScrollArea className="rounded-md border"> */}
-                        <DialogClose>
-                            <>
-                                <Button
-                                    onClick={clearFilters}
-                                    variant="ghost"
-                                    className="text-red-500"
-                                    disabled={!filter}
-                                >
-                                    Clear filters
-                                </Button>
-                                {categories.map((category, index) => (
-                                    <div key={index} className="p-4 bg-white rounded-lg shadow-md">
-                                        <h3 className="text-lg font-semibold mb-4">{category.name}</h3>
-                                        <div className="space-y-2">
-                                            {category.subcategories.map((subcategory, subIndex) => (
-                                                <ListItem
-                                                    key={subIndex}
-                                                    title={subcategory.name}
-                                                    subcategory={subcategory}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </>
-                        </DialogClose>
+                        <DialogTitle>Filter by Category</DialogTitle>
+                        <div className="flex justify-end mb-4">
+                            <button
+                                onClick={clearFilters}
+                                className="text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={!filter}
+                            >
+                                Clear filters
+                            </button>
+                        </div>
+                        {categories.map((category, index) => (
+                            <div key={index} className="p-4 bg-white rounded-lg shadow-md">
+                                <h3 className="text-lg font-semibold mb-4">{category.name}</h3>
+                                <div className="space-y-2">
+                                    {category.subcategories.map((subcategory, subIndex) => (
+                                        <ListItem
+                                            key={subIndex}
+                                            title={subcategory.name}
+                                            subcategory={subcategory}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
                     </DialogContent>
                     {/* </ScrollArea> */}
                 </Dialog>
