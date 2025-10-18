@@ -78,7 +78,7 @@ export const CreateForm = ({
     const form = useForm<CreateFormValues>({
         resolver: zodResolver(CreateFormSchema),
         defaultValues,
-        mode: "onChange",
+        mode: "all",
     })
 
     function handleCategoryChange(categoryName: string) {
@@ -86,9 +86,11 @@ export const CreateForm = ({
         setSelectedCategory(categoryName);
         const category = categories.find(cat => cat.name === categoryName);
         if (category) {
+            console.log("Category selected:", categoryName);
+            console.log("Subcategories found:", category.subcategories.length);
             setSubcategories(category.subcategories);
             // Reset subcategory when category changes
-            form.setValue("subcategoryId", "");
+            form.setValue("subcategoryId", "", { shouldValidate: true });
         }
     }
 
@@ -192,7 +194,7 @@ export const CreateForm = ({
                                     field.onChange(categoryName);
                                     handleCategoryChange(categoryName);
                                 }}
-                                defaultValue={field.value}
+                                value={field.value}
                             >
                                 <FormControl>
                                     <SelectTrigger>
@@ -258,7 +260,13 @@ export const CreateForm = ({
                 />
                 <Button 
                     type="submit" 
-                    disabled={pending || !form.formState.isValid}
+                    disabled={
+                        pending || 
+                        !form.watch("title") || 
+                        form.watch("title").length < 20 ||
+                        !form.watch("category") || 
+                        !form.watch("subcategoryId")
+                    }
                     className="min-w-[120px]"
                 >
                     {pending ? "Saving..." : "Save"}
