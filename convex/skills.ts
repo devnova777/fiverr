@@ -6,19 +6,15 @@ export const getByUser = query({
         username: v.string(),
     },
     handler: async (ctx, args) => {
-        const identity = await ctx.auth.getUserIdentity();
-
-        if (!identity) {
-            throw new Error("Unauthorized");
-        }
-
+        // Allow viewing skills without authentication (public profile)
         const user = await ctx.db
             .query("users")
             .withIndex("by_username", (q) => q.eq("username", args.username))
             .first();
 
+        // Return empty array if user not found (graceful handling)
         if (!user) {
-            throw new Error("User not found");
+            return [];
         }
 
         const skills = await ctx.db

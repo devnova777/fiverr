@@ -166,8 +166,9 @@ export const getLanguagesByUsername = query({
             .withIndex("by_username", (q) => q.eq("username", args.username))
             .unique();
 
+        // Return empty array if user not found (graceful handling)
         if (!user) {
-            throw new Error("User not found");
+            return [];
         }
 
         const languages = await ctx.db
@@ -187,16 +188,18 @@ export const getCountryByUsername = query({
             .withIndex("by_username", (q) => q.eq("username", args.username))
             .unique();
 
+        // Return null if user not found (graceful handling)
         if (!user) {
-            throw new Error("User not found");
+            return null;
         }
 
         const country = await ctx.db.query("countries")
             .withIndex("by_userId", (q) => q.eq("userId", user._id))
             .unique();
 
+        // Return null if country not found (user may not have set country yet)
         if (!country) {
-            throw new Error("Country not found");
+            return null;
         }
         return country;
     },
