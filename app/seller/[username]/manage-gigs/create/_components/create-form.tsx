@@ -36,10 +36,16 @@ const CreateFormSchema = z.object({
     category: z
         .string({
             required_error: "Please select a category.",
+        })
+        .min(1, {
+            message: "Please select a category.",
         }),
     subcategoryId: z
         .string({
             required_error: "Please select a subcategory.",
+        })
+        .min(1, {
+            message: "Please select a subcategory.",
         })
 })
 
@@ -48,6 +54,8 @@ type CreateFormValues = z.infer<typeof CreateFormSchema>
 // This can come from your database or API.
 const defaultValues: Partial<CreateFormValues> = {
     title: "",
+    category: "",
+    subcategoryId: "",
 }
 
 export const CreateForm = ({
@@ -216,7 +224,7 @@ export const CreateForm = ({
                             <FormLabel>Subcategory</FormLabel>
                             <Select 
                                 onValueChange={field.onChange} 
-                                defaultValue={field.value}
+                                value={field.value}
                                 disabled={!selectedCategory || subcategories.length === 0}
                             >
                                 <FormControl>
@@ -248,7 +256,13 @@ export const CreateForm = ({
                         </FormItem>
                     )}
                 />
-                <Button type="submit" disabled={pending}>Save</Button>
+                <Button 
+                    type="submit" 
+                    disabled={pending || !form.formState.isValid}
+                    className="min-w-[120px]"
+                >
+                    {pending ? "Saving..." : "Save"}
+                </Button>
             </form>
         </Form>
     )
