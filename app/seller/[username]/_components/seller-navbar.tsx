@@ -70,11 +70,11 @@ export const SellerNavbar = () => {
                 <NavigationMenu>
                     <NavigationMenuList className="flex flex-col md:flex-row">
                         <NavigationMenuItem>
-                            <Link href="/docs" legacyBehavior passHref>
-                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <NavigationMenuLink asChild>
+                                <Link href="/docs" className={navigationMenuTriggerStyle()}>
                                     Dashboard
-                                </NavigationMenuLink>
-                            </Link>
+                                </Link>
+                            </NavigationMenuLink>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                             <NavigationMenuTrigger>My business</NavigationMenuTrigger>
@@ -99,7 +99,7 @@ export const SellerNavbar = () => {
                                     <ListItem href={`/seller/${currentUser?.username}/manage-gigs`} title="Gigs">
                                         Manage, create and edit your gigs here.
                                     </ListItem>
-                                    <ListItem href={`/seller/${currentUser}/profile`} title="Profile">
+                                    <ListItem href={`/seller/${currentUser?.username}/profile`} title="Profile">
                                         Manage and edit your profile. Present yourself to the world.
                                     </ListItem>
                                 </ul>
@@ -122,11 +122,11 @@ export const SellerNavbar = () => {
                             </NavigationMenuContent>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <Link href="/docs" legacyBehavior passHref>
-                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <NavigationMenuLink asChild>
+                                <Link href="/docs" className={navigationMenuTriggerStyle()}>
                                     Analytics
-                                </NavigationMenuLink>
-                            </Link>
+                                </Link>
+                            </NavigationMenuLink>
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
