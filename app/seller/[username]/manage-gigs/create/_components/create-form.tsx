@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
 import { useQuery } from "convex/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Doc, Id } from "@/convex/_generated/dataModel"
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useRouter } from "next/navigation"
@@ -81,16 +81,43 @@ export const CreateForm = ({
         mode: "all",
     })
 
+    // Debug: Track subcategories state changes
+    useEffect(() => {
+        console.log("🔄 Subcategories state changed:", {
+            count: subcategories.length,
+            selectedCategory,
+            isDisabled: !selectedCategory || subcategories.length === 0
+        });
+    }, [subcategories, selectedCategory]);
+
     function handleCategoryChange(categoryName: string) {
         if (categories === undefined) return;
+        console.log("=== handleCategoryChange called ===");
+        console.log("Selected category name:", categoryName);
+        
         setSelectedCategory(categoryName);
         const category = categories.find(cat => cat.name === categoryName);
+        
+        console.log("Category found:", category);
+        console.log("Categories available:", categories.map(c => c.name));
+        
         if (category) {
-            console.log("Category selected:", categoryName);
-            console.log("Subcategories found:", category.subcategories.length);
-            setSubcategories(category.subcategories);
+            console.log("Subcategories in category:", category.subcategories);
+            console.log("Subcategories count:", category.subcategories?.length || 0);
+            
+            if (category.subcategories && category.subcategories.length > 0) {
+                setSubcategories(category.subcategories);
+                console.log("✅ Subcategories set, should enable now");
+            } else {
+                console.log("❌ No subcategories found in category");
+                setSubcategories([]);
+            }
+            
             // Reset subcategory when category changes
             form.setValue("subcategoryId", "", { shouldValidate: true });
+        } else {
+            console.log("❌ Category not found in categories array");
+            setSubcategories([]);
         }
     }
 
@@ -165,8 +192,21 @@ export const CreateForm = ({
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <>
+            {/* Debug Panel */}
+            <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs space-y-2">
+                <h4 className="font-bold">🐛 Debug Info:</h4>
+                <p>Categories loaded: {categories?.length || 0}</p>
+                <p>Selected category: {selectedCategory || "none"}</p>
+                <p>Subcategories available: {subcategories.length}</p>
+                <p>Subcategory disabled: {(!selectedCategory || subcategories.length === 0) ? "YES ❌" : "NO ✅"}</p>
+                <p>Title: {form.watch("title")?.substring(0, 30) || "empty"}</p>
+                <p>Category value: {form.watch("category") || "empty"}</p>
+                <p>SubcategoryId value: {form.watch("subcategoryId") || "empty"}</p>
+            </div>
+
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
                     name="title"
@@ -273,5 +313,6 @@ export const CreateForm = ({
                 </Button>
             </form>
         </Form>
+        </>
     )
 }
