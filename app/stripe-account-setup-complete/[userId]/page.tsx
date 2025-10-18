@@ -6,17 +6,12 @@ import { Id } from "@/convex/_generated/dataModel";
 // import { setStripeAccountSetupComplete } from "@/convex/stripe";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { useAction } from "convex/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-interface StripeAccountSetupCompleteProps {
-    params: {
-        userId: string;
-    }
-}
-
-const StripeAccountSetupComplete = ({ params }: StripeAccountSetupCompleteProps) => {
+const StripeAccountSetupComplete = () => {
+    const params = useParams<{ userId: string }>();
     const update = useAction(api.stripe.setStripeAccountSetupComplete);
 
     const router = useRouter();

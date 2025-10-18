@@ -21,7 +21,7 @@ interface GigListProps {
 export const GigList = ({
     query,
 }: GigListProps) => {
-    const gigs: FullGigType[] | undefined = useQuery(api.gigs.get, { search: query.search, favorites: query.favorites, filter: query.filter });
+    const gigs = useQuery(api.gigs.get, { search: query.search, favorites: query.favorites, filter: query.filter });
     const [gigsWithFavorite, setGigsWithFavorite] = useState<FullGigType[] | undefined>(undefined);
     // filter for favorites if query.favorites is true
     useEffect(() => {

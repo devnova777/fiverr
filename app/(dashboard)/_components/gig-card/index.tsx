@@ -25,7 +25,7 @@ interface GigCardProps {
     createdAt: number;
     isFavorite: boolean;
     storageId?: Id<"_storage">;
-    offer: Doc<"offers">;
+    offer: Doc<"offers"> | null;
     reviews: Doc<"reviews">[];
 };
 

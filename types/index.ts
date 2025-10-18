@@ -7,7 +7,7 @@ export type ImageWithUrlType = Doc<"gigMedia"> & {
 export type FullGigType = Doc<"gigs"> & {
     storageId?: Id<"_storage"> | undefined;
     favorited: boolean;
-    offer: Doc<"offers">;
+    offer: Doc<"offers"> | null;
     reviews: Doc<"reviews">[];
     seller: Doc<"users">;
 }

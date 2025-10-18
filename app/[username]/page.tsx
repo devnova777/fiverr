@@ -6,17 +6,11 @@ import { api } from "@/convex/_generated/api";
 import { MyGigsList } from "./_components/my-gigs-list";
 import { ReviewsStats } from "./_components/reviews/reviews-stats";
 import { Reviews } from "./_components/reviews/reviews";
+import { useParams } from "next/navigation";
 
-interface SellerPageProps {
-    params: {
-        username: string
-        gigId: string
-    }
-}
-
-const SellerPage = ({
-    params
-}: SellerPageProps) => {
+const SellerPage = () => {
+    const params = useParams<{ username: string; gigId: string }>();
+    
     const seller = useQuery(api.users.getUserByUsername, { username: params.username });
     const skills = useQuery(api.skills.getByUser, { username: params.username });
     const gigs = useQuery(api.gigs.getBySellerName, { sellerName: params.username });

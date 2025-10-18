@@ -9,7 +9,7 @@ interface FooterProps {
     createdAtLabel: string;
     onClick: () => void;
     disabled: boolean;
-    offer: Doc<"offers">;
+    offer: Doc<"offers"> | null;
     reviews: Doc<"reviews">[];
     seller: Doc<"users">;
 };
@@ -53,7 +53,7 @@ export const Footer = ({
         )}
         {reviews.length === 0 && (<p className="font-normal">0</p>)} */}
             </div>
-            <p className="font-semibold">From ${offer.price}</p>
+            <p className="font-semibold">From ${offer?.price || 0}</p>
             <p className="opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-muted-foreground truncate">
                 {ownerLabel}, {createdAtLabel}
             </p>

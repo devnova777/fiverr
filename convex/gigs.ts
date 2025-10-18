@@ -43,7 +43,7 @@ export const get = query({
             gigs = filteredGigs;
         }
 
-        let gigsWithFavoriteRelation = gigs;
+        let gigsWithFavoriteRelation;
 
         if (identity !== null) {
             gigsWithFavoriteRelation = await Promise.all(gigs.map((gig) => {
@@ -62,6 +62,12 @@ export const get = query({
                             favorited: !!favorite,
                         };
                     });
+            }));
+        } else {
+            // If no user is logged in, set favorited to false for all gigs
+            gigsWithFavoriteRelation = gigs.map((gig) => ({
+                ...gig,
+                favorited: false,
             }));
         }
 

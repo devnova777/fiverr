@@ -11,7 +11,7 @@ import { FormEvent, useRef, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Description } from "@/components/description";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Images } from "@/components/images";
 import { TitleEditor } from "@/components/title-editor";
@@ -19,15 +19,9 @@ import { TitleEditor } from "@/components/title-editor";
 import { Label } from "@/components/ui/label";
 import { OffersEditor } from "./_components/offers-editor";
 
-
-
-interface EditdPageProps {
-    params: {
-        gigId: string;
-    };
-};
-
-const Edit = ({ params }: EditdPageProps) => {
+const Edit = () => {
+    const params = useParams<{ gigId: string }>();
+    
     const gig = useQuery(api.gig.get, { id: params.gigId as Id<"gigs"> })
     const published = useQuery(api.gig.isPublished, { id: params.gigId as Id<"gigs"> });
     const {

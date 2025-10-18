@@ -4,8 +4,9 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 
 import "@blocknote/core/fonts/inter.css";
-import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
-import "@blocknote/react/style.css";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/mantine/style.css";
 
 import { useMutation } from "convex/react";
 import { AlertOctagon } from "lucide-react";

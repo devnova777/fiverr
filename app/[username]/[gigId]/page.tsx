@@ -12,18 +12,11 @@ import { Info } from "lucide-react";
 import { SellerDetails } from "./_components/seller-details";
 import { Reviews } from "../_components/reviews/reviews";
 import { AddReview } from "../_components/reviews/add-review";
+import { useParams } from "next/navigation";
 
-
-interface PageProps {
-    params: {
-        username: string
-        gigId: string
-    }
-}
-
-const GigPage = ({
-    params
-}: PageProps) => {
+const GigPage = () => {
+    const params = useParams<{ username: string; gigId: string }>();
+    
     const gig = useQuery(api.gig.get, { id: params.gigId as Id<"gigs"> });
     //const seller = useQuery(api.users.getUserByUsername, { username: params.username });
     const categoryAndSubcategory = useQuery(api.gig.getCategoryAndSubcategory, { gigId: params.gigId as Id<"gigs"> });

@@ -4,19 +4,14 @@ import { Input } from "@/components/ui/input";
 import Form from "./_components/form";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useConversation } from "@/hooks/use-conversation";
 import Body from "./_components/body";
 import { useCallback, useEffect, useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
+import { useParams } from "next/navigation";
 
-interface FormProps {
-    params: { otherUserName: string };
-}
-
-const ConversationPage = ({
-    params,
-}: FormProps) => {
-    const [conversation, setConversation] = useState<Doc<"conversations"> | null>(null);
+const ConversationPage = () => {
+    const params = useParams<{ otherUserName: string }>();
+    const [conversation, setConversation] = useState<any>(null);
 
     const get = useMutation(api.conversations.getOrCreateConversation);
     const conv = useQuery(api.conversations.getConversation, { username: params.otherUserName });

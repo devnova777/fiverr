@@ -1,16 +1,11 @@
 "use client";
 
 import { CreateForm } from "./_components/create-form";
+import { useParams } from "next/navigation";
 
-interface CreateGigProps {
-    params: {
-        username: string;
-    }
-}
-
-const CreateGig = ({
-    params
-}: CreateGigProps) => {
+const CreateGig = () => {
+    const params = useParams<{ username: string }>();
+    
     return (
         <div className="flex justify-center">
             <CreateForm
