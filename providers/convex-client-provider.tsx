@@ -9,7 +9,15 @@ interface ConvexClientProviderProps {
     children: React.ReactNode;
 }
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL!;
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+if (!convexUrl) {
+    throw new Error(
+        "Missing NEXT_PUBLIC_CONVEX_URL environment variable.\n" +
+        "If running locally, make sure to run `npx convex dev` in a separate terminal.\n" +
+        "If deploying to production, follow the instructions at https://docs.convex.dev/production/hosting/"
+    );
+}
 
 const convex = new ConvexReactClient(convexUrl);
 
