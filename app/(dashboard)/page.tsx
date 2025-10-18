@@ -10,14 +10,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 const Dashboard = () => {
     const searchParams = useSearchParams();
+    const { isAuthenticated, isLoading } = useConvexAuth();
     const store = useMutation(api.users.store);
     
     useEffect(() => {
+        if (!isAuthenticated || isLoading) {
+            return;
+        }
+        
         const storeUser = async () => {
-            await store({});
+            try {
+                await store({});
+            } catch (error) {
+                console.error("Failed to store user:", error);
+            }
         }
         storeUser();
-    }, [store])
+    }, [isAuthenticated, isLoading, store])
 
     // Convert URLSearchParams to object
     const query = {
