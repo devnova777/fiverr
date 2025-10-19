@@ -98,8 +98,9 @@ export const getBySellerName = query({
             .withIndex("by_username", (q) => q.eq("username", args.sellerName))
             .unique();
 
+        // Return empty array if seller not found (graceful handling)
         if (!seller) {
-            throw new Error("Seller not found");
+            return [];
         }
 
         const reviews = await ctx.db
