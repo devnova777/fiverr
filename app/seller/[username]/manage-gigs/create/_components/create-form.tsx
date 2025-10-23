@@ -68,6 +68,7 @@ export const CreateForm = ({
     
     const seedCategories = useMutation(api.seedCategories.create);
     const seedSubcategories = useMutation(api.seedSubcategories.create);
+    const allSubcategories = useQuery(api.seedSubcategories.get);
     
     const {
         mutate,
@@ -188,6 +189,8 @@ export const CreateForm = ({
                 <p>Selected category: {selectedCategory || "none"}</p>
                 <p>Subcategories available: {subcategories.length}</p>
                 <p>Categories data: {JSON.stringify(categories?.map(c => ({ name: c.name, subcategoriesCount: c.subcategories?.length || 0 })), null, 2)}</p>
+                <p>All subcategories in DB: {allSubcategories?.length || 0}</p>
+                <p>Subcategories data: {JSON.stringify(allSubcategories?.slice(0, 5), null, 2)}</p>
                 <Button 
                     onClick={handleSeedDatabase}
                     disabled={isSeeding}

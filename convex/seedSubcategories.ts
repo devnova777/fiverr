@@ -49,8 +49,9 @@ export const create = mutation({
 
         const subcategoriesCheck = await ctx.db.query("subcategories").collect();
 
+        // Always clear existing subcategories to ensure clean re-seeding
         if (subcategoriesCheck.length > 0) {
-            // Clear existing subcategories to allow re-seeding
+            console.log(`Clearing ${subcategoriesCheck.length} existing subcategories...`);
             await Promise.all(
                 subcategoriesCheck.map(subcategory => 
                     ctx.db.delete(subcategory._id)
@@ -58,9 +59,15 @@ export const create = mutation({
             );
         }
 
+        console.log("Starting subcategory seeding...");
+        let totalInserted = 0;
+        
         await Promise.all(
             categories.flatMap((category) => {
                 const categorySubcategories = subcategoriesByCategory[category.name as keyof typeof subcategoriesByCategory] || [];
+                console.log(`Seeding ${categorySubcategories.length} subcategories for category: ${category.name}`);
+                totalInserted += categorySubcategories.length;
+                
                 return categorySubcategories.map((subcategoryName) =>
                     ctx.db.insert("subcategories", {
                         categoryId: category._id,
@@ -69,8 +76,17 @@ export const create = mutation({
                 );
             })
         );
+        
+        console.log(`Total subcategories inserted: ${totalInserted}`);
 
         const newSubcategories = await ctx.db.query("subcategories").collect();
         return { message: "Subcategories seeded successfully", count: newSubcategories.length };
+    },
+});
+
+export const get = query({
+    handler: async (ctx) => {
+        const subcategories = await ctx.db.query("subcategories").collect();
+        return subcategories;
     },
 });
