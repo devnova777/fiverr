@@ -83,10 +83,3 @@ export const create = mutation({
         return { message: "Subcategories seeded successfully", count: newSubcategories.length };
     },
 });
-
-export const get = query({
-    handler: async (ctx) => {
-        const subcategories = await ctx.db.query("subcategories").collect();
-        return subcategories;
-    },
-});

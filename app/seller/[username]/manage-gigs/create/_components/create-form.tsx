@@ -68,7 +68,6 @@ export const CreateForm = ({
     
     const seedCategories = useMutation(api.seedCategories.create);
     const seedSubcategories = useMutation(api.seedSubcategories.create);
-    const allSubcategories = useQuery(api.seedSubcategories.get);
     
     const {
         mutate,
@@ -84,15 +83,14 @@ export const CreateForm = ({
 
     // Auto-load subcategories when category is selected and data is available
     useEffect(() => {
-        if (selectedCategory && categories && allSubcategories) {
+        if (selectedCategory && categories) {
             const category = categories.find(cat => cat.name === selectedCategory);
-            if (category) {
-                const categorySubcategories = allSubcategories.filter(sub => sub.categoryId === category._id);
-                setSubcategories(categorySubcategories);
-                console.log("🔄 Auto-loaded subcategories:", categorySubcategories.length);
+            if (category && category.subcategories) {
+                setSubcategories(category.subcategories);
+                console.log("🔄 Auto-loaded subcategories:", category.subcategories.length);
             }
         }
-    }, [selectedCategory, categories, allSubcategories]);
+    }, [selectedCategory, categories]);
 
 
     function handleCategoryChange(categoryName: string) {
@@ -110,19 +108,8 @@ export const CreateForm = ({
                 setSubcategories(category.subcategories);
                 console.log("✅ Subcategories set:", category.subcategories.length);
             } else {
-                // If no subcategories found in the category object, try to find them manually
-                console.log("❌ No subcategories found in category object, checking all subcategories...");
-                if (allSubcategories) {
-                    const categorySubcategories = allSubcategories.filter(sub => {
-                        // Find the category by name to get its ID
-                        const cat = categories.find(c => c.name === categoryName);
-                        return cat && sub.categoryId === cat._id;
-                    });
-                    console.log("🔍 Found subcategories manually:", categorySubcategories.length);
-                    setSubcategories(categorySubcategories);
-                } else {
-                    setSubcategories([]);
-                }
+                setSubcategories([]);
+                console.log("❌ No subcategories found for category:", categoryName);
             }
             
             // Reset subcategory when category changes
@@ -212,8 +199,6 @@ export const CreateForm = ({
                 <p>Selected category: {selectedCategory || "none"}</p>
                 <p>Subcategories available: {subcategories.length}</p>
                 <p>Categories data: {JSON.stringify(categories?.map(c => ({ name: c.name, subcategoriesCount: c.subcategories?.length || 0 })), null, 2)}</p>
-                <p>All subcategories in DB: {allSubcategories?.length || 0}</p>
-                <p>Subcategories data: {JSON.stringify(allSubcategories?.slice(0, 5), null, 2)}</p>
                 <Button 
                     onClick={handleSeedDatabase}
                     disabled={isSeeding}
