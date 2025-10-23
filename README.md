@@ -3,8 +3,6 @@
 
 A full-stack Fiverr clone built with the latest web technologies.
 
-[Original VIDEO TUTORIAL](https://youtu.be/UK5SI3lU3X8)
-
 ## ⚡ Tech Stack
 
 - **Next.js 15.5.6** - App Router
@@ -29,7 +27,7 @@ A full-stack Fiverr clone built with the latest web technologies.
 
 ### 1. Clone this Repository
 ```bash
-git clone https://github.com/Kashima0920/fiverr.git
+git clone https://github.com/devnova777/fiverr.git
 cd fiverr
 ```
 
