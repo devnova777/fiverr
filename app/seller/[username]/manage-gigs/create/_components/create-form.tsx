@@ -88,17 +88,24 @@ export const CreateForm = ({
         setSelectedCategory(categoryName);
         const category = categories.find(cat => cat.name === categoryName);
         
+        console.log("🔍 Debug - Category selected:", categoryName);
+        console.log("🔍 Debug - Category found:", category);
+        console.log("🔍 Debug - Category subcategories:", category?.subcategories);
+        
         if (category) {
             if (category.subcategories && category.subcategories.length > 0) {
                 setSubcategories(category.subcategories);
+                console.log("✅ Subcategories set:", category.subcategories.length);
             } else {
                 setSubcategories([]);
+                console.log("❌ No subcategories found for category:", categoryName);
             }
             
             // Reset subcategory when category changes
             form.setValue("subcategoryId", "", { shouldValidate: true });
         } else {
             setSubcategories([]);
+            console.log("❌ Category not found:", categoryName);
         }
     }
 
@@ -174,6 +181,22 @@ export const CreateForm = ({
 
     return (
         <>
+            {/* Temporary Debug Panel */}
+            <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-xs space-y-2">
+                <h4 className="font-bold">🔍 Debug Info:</h4>
+                <p>Categories loaded: {categories?.length || 0}</p>
+                <p>Selected category: {selectedCategory || "none"}</p>
+                <p>Subcategories available: {subcategories.length}</p>
+                <p>Categories data: {JSON.stringify(categories?.map(c => ({ name: c.name, subcategoriesCount: c.subcategories?.length || 0 })), null, 2)}</p>
+                <Button 
+                    onClick={handleSeedDatabase}
+                    disabled={isSeeding}
+                    className="mt-2"
+                    size="sm"
+                >
+                    {isSeeding ? "Re-seeding..." : "Re-seed Subcategories"}
+                </Button>
+            </div>
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
