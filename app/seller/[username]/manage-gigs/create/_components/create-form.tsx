@@ -68,6 +68,7 @@ export const CreateForm = ({
     
     const seedCategories = useMutation(api.seedCategories.create);
     const seedSubcategories = useMutation(api.seedSubcategories.create);
+    const allSubcategories = useQuery(api.seedSubcategories.get);
     
     const {
         mutate,
@@ -81,43 +82,54 @@ export const CreateForm = ({
         mode: "all",
     })
 
-    // Debug: Track subcategories state changes
+    // Auto-load subcategories when category is selected and data is available
     useEffect(() => {
-        console.log("🔄 Subcategories state changed:", {
-            count: subcategories.length,
-            selectedCategory,
-            isDisabled: !selectedCategory || subcategories.length === 0
-        });
-    }, [subcategories, selectedCategory]);
+        if (selectedCategory && categories && allSubcategories) {
+            const category = categories.find(cat => cat.name === selectedCategory);
+            if (category) {
+                const categorySubcategories = allSubcategories.filter(sub => sub.categoryId === category._id);
+                setSubcategories(categorySubcategories);
+                console.log("🔄 Auto-loaded subcategories:", categorySubcategories.length);
+            }
+        }
+    }, [selectedCategory, categories, allSubcategories]);
+
 
     function handleCategoryChange(categoryName: string) {
         if (categories === undefined) return;
-        console.log("=== handleCategoryChange called ===");
-        console.log("Selected category name:", categoryName);
         
         setSelectedCategory(categoryName);
         const category = categories.find(cat => cat.name === categoryName);
         
-        console.log("Category found:", category);
-        console.log("Categories available:", categories.map(c => c.name));
+        console.log("🔍 Debug - Category selected:", categoryName);
+        console.log("🔍 Debug - Category found:", category);
+        console.log("🔍 Debug - Category subcategories:", category?.subcategories);
         
         if (category) {
-            console.log("Subcategories in category:", category.subcategories);
-            console.log("Subcategories count:", category.subcategories?.length || 0);
-            
             if (category.subcategories && category.subcategories.length > 0) {
                 setSubcategories(category.subcategories);
-                console.log("✅ Subcategories set, should enable now");
+                console.log("✅ Subcategories set:", category.subcategories.length);
             } else {
-                console.log("❌ No subcategories found in category");
-                setSubcategories([]);
+                // If no subcategories found in the category object, try to find them manually
+                console.log("❌ No subcategories found in category object, checking all subcategories...");
+                if (allSubcategories) {
+                    const categorySubcategories = allSubcategories.filter(sub => {
+                        // Find the category by name to get its ID
+                        const cat = categories.find(c => c.name === categoryName);
+                        return cat && sub.categoryId === cat._id;
+                    });
+                    console.log("🔍 Found subcategories manually:", categorySubcategories.length);
+                    setSubcategories(categorySubcategories);
+                } else {
+                    setSubcategories([]);
+                }
             }
             
             // Reset subcategory when category changes
             form.setValue("subcategoryId", "", { shouldValidate: true });
         } else {
-            console.log("❌ Category not found in categories array");
             setSubcategories([]);
+            console.log("❌ Category not found:", categoryName);
         }
     }
 
@@ -193,16 +205,23 @@ export const CreateForm = ({
 
     return (
         <>
-            {/* Debug Panel */}
-            <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs space-y-2">
-                <h4 className="font-bold">🐛 Debug Info:</h4>
+            {/* Temporary Debug Panel */}
+            <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-xs space-y-2">
+                <h4 className="font-bold">🔍 Debug Info:</h4>
                 <p>Categories loaded: {categories?.length || 0}</p>
                 <p>Selected category: {selectedCategory || "none"}</p>
                 <p>Subcategories available: {subcategories.length}</p>
-                <p>Subcategory disabled: {(!selectedCategory || subcategories.length === 0) ? "YES ❌" : "NO ✅"}</p>
-                <p>Title: {form.watch("title")?.substring(0, 30) || "empty"}</p>
-                <p>Category value: {form.watch("category") || "empty"}</p>
-                <p>SubcategoryId value: {form.watch("subcategoryId") || "empty"}</p>
+                <p>Categories data: {JSON.stringify(categories?.map(c => ({ name: c.name, subcategoriesCount: c.subcategories?.length || 0 })), null, 2)}</p>
+                <p>All subcategories in DB: {allSubcategories?.length || 0}</p>
+                <p>Subcategories data: {JSON.stringify(allSubcategories?.slice(0, 5), null, 2)}</p>
+                <Button 
+                    onClick={handleSeedDatabase}
+                    disabled={isSeeding}
+                    className="mt-2"
+                    size="sm"
+                >
+                    {isSeeding ? "Re-seeding..." : "Re-seed Subcategories"}
+                </Button>
             </div>
 
             <Form {...form}>
