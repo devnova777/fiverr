@@ -22,7 +22,7 @@ export type GigWithImageType = Doc<"gigs"> & {
 
 
 export type UserWithCountryType = Doc<"users"> & {
-    country: Doc<"countries">
+    country: Doc<"countries"> | null
 };
 
 export type ReviewFullType = Doc<"reviews"> & {
