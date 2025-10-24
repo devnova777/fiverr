@@ -60,10 +60,6 @@ export const get = query({
             .withIndex("by_userId", (q) => q.eq("userId", seller._id))
             .unique();
 
-        if (country === null) {
-            throw new Error("Country not found");
-        }
-
         // get languages
         const languages = await ctx.db.query("languages")
             .withIndex("by_userId", (q) => q.eq("userId", seller._id))

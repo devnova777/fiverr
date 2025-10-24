@@ -160,10 +160,6 @@ export const getBySellerName = query({
                 .withIndex("by_userId", (q) => q.eq("userId", seller._id))
                 .unique();
 
-            if (!country) {
-                throw new Error("Country not found");
-            }
-
             return {
                 ...review,
                 gig,
