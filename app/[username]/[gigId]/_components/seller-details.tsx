@@ -70,7 +70,7 @@ export const SellerDetails = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4">
                     <div>
                         <p className="font-semibold">From</p>
-                        <p>{seller.country.countryName}</p>
+                        <p>{seller.country?.countryName || "Not specified"}</p>
                     </div>
                     <div>
                         <p className="font-semibold">Joined</p>

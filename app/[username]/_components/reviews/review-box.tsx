@@ -28,7 +28,7 @@ export const ReviewBox = ({ review }: ReviewBoxProps) => {
             </Avatar>
             <div className="flex flex-col space-y-2">
                 <p className="font-bold">{review.author.fullName}</p>
-                <p>{review.author.country.countryName}</p>
+                <p>{review.author.country?.countryName || "Not specified"}</p>
                 <div className='flex space-x-6 items-center'>
                     <div className="flex items-center font-bold">
                         {/* Display 5 stars */}
